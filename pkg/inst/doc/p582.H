@@ -14,9 +14,9 @@ ppp.data <- cbind( ppp.data, rer = ppp.data[,"p"] - ppp.data[,"ner"] - ppp.data[
 \end{Scode}
 \begin{center}
 \begin{Scode}{fig=TRUE, echo=FALSE}
-plot( index(ppp.data), ppp.data[,"ner"], type="l",lty=3,xlab="Figure 19.2", ylab="", ylim=c(-150,250))
-lines(index(ppp.data),ppp.data[,"p"],lty=2)
-lines(index(ppp.data),ppp.data[,"pstar"],lty=1)
+plot(ppp.data[, c("ner", "p", "pstar")], type="l",xlab="Figure 19.2", ylab="",
+            ylim=c(-150,250), plot.type="single", lty=c(3,2,1))
+legend("topleft", lty = 1:3, leg = names(ppp.data[1:3]))
 \end{Scode}
 \end{center}
 \begin{center}
@@ -31,7 +31,7 @@ do.DF <- function( series, lag )
 {
   df.lms <- summary( dynlm(
     formula=as.formula(paste("y ~ L(y) + tt + L(d(y),1:",lag,") + 1",sep="")),
-    data=cbind(y=series, tt=1:length(series))
+    data=zooreg(cbind(y=series, tt=1:length(series)))
       ))
   df.results <- Dickey.Fuller(
     T=length(df.lms$residuals),
@@ -43,7 +43,7 @@ do.DF <- function( series, lag )
                       r=c(1,0),
                       s2=df.lms$sigma^2,
                       XtX_1=df.lms$cov.unscaled )
-  print( df.lms$coefficients )
+  print( t(df.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
   print( df.results )
   print(F)
 }
@@ -51,10 +51,9 @@ do.DF <- function( series, lag )
 Following the text, check each series with a Dickey Fuller test with a regression estimated with twelve lags.
 \begin{Scode}{}
 for ( series.name in c( "p", "pstar", "ner", "rer" ) )
-  do.DF( series=ppp.data[,series.name], lag=12 )
+  do.DF( series=as.vector(ppp.data[,series.name]), lag=12 )
 \end{Scode}
 Now check the real exchange rate with a Phillips Perron test
-
 \begin{Scode}{}
 pp.lms <- summary(dynlm( z ~ L(z) + 1, zooreg(cbind(z=as.vector(ppp.data[,"rer"]))) ))
 PP.results <- Phillips.Perron(
@@ -64,11 +63,16 @@ PP.results <- Phillips.Perron(
   s=pp.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( pp.lms$residuals %o% 1, 12 )),
   gamma0=mean(pp.lms$residuals^2) )
-print( pp.lms$coefficients )
+print( t(pp.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( PP.results)
 \end{Scode}
-
 Estimating the impulse response function gives a sense of the persistence of deviations from PPP.
+as shown in Figure 19.4, page 584.  Proceed in three steps:
+\begin{enumerate}
+\item Estimate the AR(12)
+\item Creta an innovation vector with only zeros and once a 1 value
+\item Simulate an AR(12) process with parameters estimated in 1 and innovations defined in 2. 
+\end{enumerate}
 \begin{Scode}{}
 ar.results <- ar(ppp.data$rer, aic = FALSE, order.max = 13, method="ols", demean=TRUE)
 tt <- seq(1,72)
@@ -95,8 +99,8 @@ POH.results <- Phillips.Perron( T=length(poh.residual.lms$residuals),
   s=poh.residual.lms$sigma, 
   lambda.hat.sq=as.numeric(Newey.West( poh.residual.lms$residuals %o% 1, 12 )), 
   gamma0=mean(poh.residual.lms$residuals^2) )
-print( summary(poh.cointegration.lm)$coefficients )
-print( poh.residual.lms$coefficients )
+print( t( summary(poh.cointegration.lm)$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
+print( t(poh.residual.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( POH.results)
 \end{Scode}
 A second example performs a similar analysis on quarterly US consumption and income data from 1947Q1 to 1989Q3.
@@ -115,7 +119,7 @@ plot( index(coninc.data),coninc.data[,"c"] - coninc.data[,"y"], type="l",lty=1,x
 Test individual series for unit root status using Dickey Fuller.
 \begin{Scode}{}
 for ( series.name in c(  "y", "c") )
-  do.DF( series=coninc.data[,series.name], lag=6 )
+  do.DF( series=as.vector(coninc.data[,series.name]), lag=6 )
 \end{Scode}
 Estimate cointegration vector, then check for unit root status of the residual using Phillips Perron.
 \begin{Scode}{}  
@@ -129,8 +133,8 @@ POH.results <- Phillips.Perron( T=length(poh.residual.lms$residuals),
   s=poh.residual.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( poh.residual.lms$residuals %o% 1, 6 )),
   gamma0=mean(poh.residual.lms$residuals^2) )
-print( summary(poh.cointegration.lm)$coefficients )
-print( poh.residual.lms$coefficients )
+print( t(summary(poh.cointegration.lm)$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
+print( t(poh.residual.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( POH.results)
 \end{Scode}
 \subsection{Testing Hypotheses About the Cointegrating Vector}
@@ -155,7 +159,7 @@ for ( model in list(no.trend.lm,trend.lm) )
   lambda.11 <- sigma1.hat.sq^.5 /  (1 - sum(rms$coefficients[ paste("L(u, 1:",lags,")",1:lags,sep=""),  "Estimate"]))
   t.a <- t.rho * cms$sigma / lambda.11
   print(cfs)
-  print(rms$coefficients )
+  print( t(rms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
   print( T )
   print(cms$sigma)
   print(t.rho)

@@ -8,9 +8,9 @@ ppp.data <- cbind(
 ppp.data <- cbind( ppp.data, rer = ppp.data[,"p"] - ppp.data[,"ner"] - ppp.data[,"pstar"] )
 
 
-plot( index(ppp.data), ppp.data[,"ner"], type="l",lty=3,xlab="Figure 19.2", ylab="", ylim=c(-150,250))
-lines(index(ppp.data),ppp.data[,"p"],lty=2)
-lines(index(ppp.data),ppp.data[,"pstar"],lty=1)
+plot(ppp.data[, c("ner", "p", "pstar")], type="l",xlab="Figure 19.2", ylab="",
+            ylim=c(-150,250), plot.type="single", lty=c(3,2,1))
+legend("topleft", lty = 1:3, leg = names(ppp.data[1:3]))
 
 
 plot(index(ppp.data), ppp.data[,"rer"], type="l",lty=1,xlab="Figure 19.3", ylab="")
@@ -32,7 +32,7 @@ do.DF <- function( series, lag )
                       r=c(1,0),
                       s2=df.lms$sigma^2,
                       XtX_1=df.lms$cov.unscaled )
-  print( df.lms$coefficients )
+  print( t(df.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
   print( df.results )
   print(F)
 }
@@ -50,7 +50,7 @@ PP.results <- Phillips.Perron(
   s=pp.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( pp.lms$residuals %o% 1, 12 )),
   gamma0=mean(pp.lms$residuals^2) )
-print( pp.lms$coefficients )
+print( t(pp.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( PP.results)
 
 
@@ -77,8 +77,8 @@ POH.results <- Phillips.Perron( T=length(poh.residual.lms$residuals),
   s=poh.residual.lms$sigma, 
   lambda.hat.sq=as.numeric(Newey.West( poh.residual.lms$residuals %o% 1, 12 )), 
   gamma0=mean(poh.residual.lms$residuals^2) )
-print( summary(poh.cointegration.lm)$coefficients )
-print( poh.residual.lms$coefficients )
+print( t( summary(poh.cointegration.lm)$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
+print( t(poh.residual.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( POH.results)
 
 
@@ -108,8 +108,8 @@ POH.results <- Phillips.Perron( T=length(poh.residual.lms$residuals),
   s=poh.residual.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( poh.residual.lms$residuals %o% 1, 6 )),
   gamma0=mean(poh.residual.lms$residuals^2) )
-print( summary(poh.cointegration.lm)$coefficients )
-print( poh.residual.lms$coefficients )
+print( t(summary(poh.cointegration.lm)$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
+print( t(poh.residual.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( POH.results)
 
 
@@ -130,7 +130,7 @@ for ( model in list(no.trend.lm,trend.lm) )
   lambda.11 <- sigma1.hat.sq^.5 /  (1 - sum(rms$coefficients[ paste("L(u, 1:",lags,")",1:lags,sep=""),  "Estimate"]))
   t.a <- t.rho * cms$sigma / lambda.11
   print(cfs)
-  print(rms$coefficients )
+  print( t(rms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
   print( T )
   print(cms$sigma)
   print(t.rho)

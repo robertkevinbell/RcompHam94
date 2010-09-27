@@ -47,7 +47,7 @@ case1.lms <- summary( dynlm(i ~ 0 + L(i), dataset) )
 case1.DF <- Dickey.Fuller( T=length(case1.lms$residuals),
   rho=case1.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=case1.lms$coefficients[["L(i)","Std. Error"]] )
-print( case1.lms$coefficients)
+print( t(case1.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case1.DF )
 \end{Scode}
 A similar analysis is described on page 494 , but a constant is included in the regression model [17.4.37].
@@ -56,7 +56,7 @@ case2.lms <- summary(dynlm( i ~ 1 + L(i), dataset))
 case2.DF <- Dickey.Fuller( T=length(case2.lms$residuals),
   rho=case2.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=case2.lms$coefficients[["L(i)","Std. Error"]] )
-print( case2.lms$coefficients )
+print( t(case2.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case2.DF )
 \end{Scode}
 Example 17.5 describes how to test the joint hypothesis that the trend coefficient is 0 and the autoregressive
@@ -69,6 +69,27 @@ F <- Wald.F.Test( R=diag(2),
                       XtX_1=case2.lms$cov.unscaled )
 print(F)
 \end{Scode}
+We can conduct a similar analysis for cases 1 and 2 using contributed package "urca" from CRAN.
+\begin{Scode}
+library(urca)
+args(ur.df)
+tbill.1.ur.df <-ur.df(dataset[,"i"],  type ="none", lags = 0)
+print(summary(tbill.1.ur.df))
+tbill.2.ur.df <-ur.df(dataset[,"i"],  type ="drift", lags = 0)
+print(summary(tbill.2.ur.df))
+\end{Scode}
+The test statistic quoted here is the t-statistic from text, and,
+conveniently the critical values from the appropriate
+tables in the book are printed as well.
+The ur.df function uses a slightly different form of the regression than the Hamilton text, using the first difference
+of the input variable as the left hand side, rather than its level.  The resulting coefficient on the lagged value
+of the input variable will thus be 1 less than that obtained using the "manual" procedure above.
+\begin{Scode}
+print(case1.lms$coefficients["L(i)","Estimate"])
+print(attr(tbill.1.ur.df,"testreg")$coefficients["z.lag.1","Estimate"]+1)
+print(case2.lms$coefficients["L(i)","Estimate"])
+print(attr(tbill.2.ur.df,"testreg")$coefficients["z.lag.1","Estimate"]+1)
+\end{Scode}
 \subsection{Analyzing GNP data}
 A similar analysis can be conducted on log real GNP data described beginning on page 501, shown below.
 \begin{Scode}{fig=TRUE, echo=FALSE}
@@ -80,7 +101,7 @@ case4.lms <- summary(dynlm( y ~ 1 + L(y) + tt, dataset ))
 case4.DF <- Dickey.Fuller( T=length(case4.lms$residuals),
   rho=case4.lms$coefficients[["L(y)","Estimate"]],
   sigma.rho=case4.lms$coefficients[["L(y)","Std. Error"]] )
-print( case4.lms$coefficients )
+print( t(case4.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case4.DF )
 F <- Wald.F.Test( R=cbind( rep(0,2), diag(2) ),
                       b=case4.lms$coefficients[,"Estimate"],
@@ -89,7 +110,12 @@ F <- Wald.F.Test( R=cbind( rep(0,2), diag(2) ),
                       XtX_1=case4.lms$cov.unscaled )
 print(F)
 \end{Scode}
-
+Similarly we can use ur.df to get similar results, although ur.df gives a slightly different value for the intercept.
+We were unable to explain this discrepancy.
+\begin{Scode}{}
+gnp.4.ur.df <-ur.df(dataset[,"y"],  type ="trend", lags = 0)
+print(summary(gnp.4.ur.df))
+\end{Scode}
 \subsection{Using Phillips Perron Tests}
 Examples 17.6 and 17.7 reanalyze the case 2 and case 4 regressions above using the Phillips Perron tests
 as shown on pages 511-513.
@@ -100,7 +126,7 @@ case2.PP <- Phillips.Perron( T=length(case2.lms$residuals),
   s=case2.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( case2.lms$residuals %o% 1, 4 )),
   gamma0=mean(case2.lms$residuals^2) )
-print( case2.lms$coefficients )
+print( t(case2.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case2.PP)
 case4.PP <- Phillips.Perron( T=length(case4.lms$residuals),
   rho=case4.lms$coefficients[["L(y)","Estimate"]],
@@ -108,7 +134,7 @@ case4.PP <- Phillips.Perron( T=length(case4.lms$residuals),
   s=case4.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( case4.lms$residuals %o% 1, 4 )),
   gamma0=mean(case4.lms$residuals^2) )
-print( case4.lms$coefficients )
+print( t(case4.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case4.PP)
 \end{Scode}
 \subsection{Augmented Dickey Fuller Tests}
@@ -121,7 +147,7 @@ tbill.adf <- Dickey.Fuller(
   rho=tbill.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=tbill.lms$coefficients[["L(i)","Std. Error"]],
   zeta=tbill.lms$coefficients[paste("L(d(i), 1:4)", 1:4, sep = ""),"Estimate"] )
-print( tbill.lms$coefficients)
+print( t(tbill.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( tbill.adf )
 \end{Scode}
 The next test checks whether or not the farthest lag is different from zero, i.e. whether or not the right number
@@ -142,7 +168,7 @@ F <- Wald.F.Test( R=cbind( rep(0,2) %o% rep(0,5), diag(2) ),
                       r=c(1,0),
                       s2=gnp.lms$sigma^2,
                       XtX_1=gnp.lms$cov.unscaled )
-print( gnp.lms$coefficients )
+print( t(gnp.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( gnp.adf )
 print(F)
 \end{Scode}

@@ -16,14 +16,14 @@ dataset <- window(
 	start=c(1947,1), end=c(1989,1) )
 
 
-plot(index(gnptbill),gnptbill$i, type = "l", xlab="Figure 17.2 - Nominal Interest Rate", ylab="")
+plot(index(gnptbill),gnptbill$TBILL, type = "l", xlab="Figure 17.2 - Nominal Interest Rate", ylab="")
 
 
 case1.lms <- summary( dynlm(i ~ 0 + L(i), dataset) )
 case1.DF <- Dickey.Fuller( T=length(case1.lms$residuals),
   rho=case1.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=case1.lms$coefficients[["L(i)","Std. Error"]] )
-print( case1.lms$coefficients)
+print( t(case1.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case1.DF )
 
 
@@ -31,7 +31,7 @@ case2.lms <- summary(dynlm( i ~ 1 + L(i), dataset))
 case2.DF <- Dickey.Fuller( T=length(case2.lms$residuals),
   rho=case2.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=case2.lms$coefficients[["L(i)","Std. Error"]] )
-print( case2.lms$coefficients )
+print( t(case2.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case2.DF )
 
 
@@ -43,14 +43,28 @@ F <- Wald.F.Test( R=diag(2),
 print(F)
 
 
-plot(index(gnptbill),gnptbill$Y, type = "l", xlab="Figure 17.3 - Real GNP", ylab="")
+library(urca)
+args(ur.df)
+tbill.1.ur.df <-ur.df(dataset[,"i"],  type ="none", lags = 0)
+print(summary(tbill.1.ur.df))
+tbill.2.ur.df <-ur.df(dataset[,"i"],  type ="drift", lags = 0)
+print(summary(tbill.2.ur.df))
+
+
+print(case1.lms$coefficients["L(i)","Estimate"])
+print(attr(tbill.1.ur.df,"testreg")$coefficients["z.lag.1","Estimate"]+1)
+print(case2.lms$coefficients["L(i)","Estimate"])
+print(attr(tbill.2.ur.df,"testreg")$coefficients["z.lag.1","Estimate"]+1)
+
+
+plot(index(gnptbill),gnptbill$GNP, type = "l", xlab="Figure 17.3 - Real GNP", ylab="")
 
 
 case4.lms <- summary(dynlm( y ~ 1 + L(y) + tt, dataset ))
 case4.DF <- Dickey.Fuller( T=length(case4.lms$residuals),
   rho=case4.lms$coefficients[["L(y)","Estimate"]],
   sigma.rho=case4.lms$coefficients[["L(y)","Std. Error"]] )
-print( case4.lms$coefficients )
+print( t(case4.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case4.DF )
 F <- Wald.F.Test( R=cbind( rep(0,2), diag(2) ),
                       b=case4.lms$coefficients[,"Estimate"],
@@ -60,13 +74,17 @@ F <- Wald.F.Test( R=cbind( rep(0,2), diag(2) ),
 print(F)
 
 
+gnp.4.ur.df <-ur.df(dataset[,"y"],  type ="trend", lags = 0)
+print(summary(gnp.4.ur.df))
+
+
 case2.PP <- Phillips.Perron( T=length(case2.lms$residuals),
   rho=case2.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=case2.lms$coefficients[["L(i)","Std. Error"]],
   s=case2.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( case2.lms$residuals %o% 1, 4 )),
   gamma0=mean(case2.lms$residuals^2) )
-print( case2.lms$coefficients )
+print( t(case2.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case2.PP)
 case4.PP <- Phillips.Perron( T=length(case4.lms$residuals),
   rho=case4.lms$coefficients[["L(y)","Estimate"]],
@@ -74,7 +92,7 @@ case4.PP <- Phillips.Perron( T=length(case4.lms$residuals),
   s=case4.lms$sigma,
   lambda.hat.sq=as.numeric(Newey.West( case4.lms$residuals %o% 1, 4 )),
   gamma0=mean(case4.lms$residuals^2) )
-print( case4.lms$coefficients )
+print( t(case4.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case4.PP)
 
 
@@ -84,7 +102,7 @@ tbill.adf <- Dickey.Fuller(
   rho=tbill.lms$coefficients[["L(i)","Estimate"]],
   sigma.rho=tbill.lms$coefficients[["L(i)","Std. Error"]],
   zeta=tbill.lms$coefficients[paste("L(d(i), 1:4)", 1:4, sep = ""),"Estimate"] )
-print( tbill.lms$coefficients)
+print( t(tbill.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( tbill.adf )
 
 
@@ -102,7 +120,7 @@ F <- Wald.F.Test( R=cbind( rep(0,2) %o% rep(0,5), diag(2) ),
                       r=c(1,0),
                       s2=gnp.lms$sigma^2,
                       XtX_1=gnp.lms$cov.unscaled )
-print( gnp.lms$coefficients )
+print( t(gnp.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( gnp.adf )
 print(F)
 
