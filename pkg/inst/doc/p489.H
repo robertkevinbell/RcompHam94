@@ -137,6 +137,17 @@ case4.PP <- Phillips.Perron( T=length(case4.lms$residuals),
 print( t(case4.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case4.PP)
 \end{Scode}
+We can get similar results for the PP t-stat by using the function ur.pp from the urca package.
+Note that the implied regression generates the trend centered at T/2, so
+that the intercept term shown is different than that calculated above,
+where the trend starts at 1.
+\begin{Scode}{}
+args(ur.pp)
+case2.ur.pp <- ur.pp( dataset[,"i"], type ="Z-tau", model = "constant", use.lag = 4 )
+print(summary(case2.ur.pp))
+case4.ur.pp <- ur.pp( dataset[,"y"], type ="Z-tau", model = "trend", use.lag = 4 )
+print(summary(case4.ur.pp))
+\end{Scode}
 \subsection{Augmented Dickey Fuller Tests}
 Example 17.8 illustrates incorporates the use of lagged regressors to (putatively) eliminate serial
 correlation in the residuals.  

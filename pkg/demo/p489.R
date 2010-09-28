@@ -96,6 +96,13 @@ print( t(case4.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( case4.PP)
 
 
+args(ur.pp)
+case2.ur.pp <- ur.pp( dataset[,"i"], type ="Z-tau", model = "constant", use.lag = 4 )
+print(summary(case2.ur.pp))
+case4.ur.pp <- ur.pp( dataset[,"y"], type ="Z-tau", model = "trend", use.lag = 4 )
+print(summary(case4.ur.pp))
+
+
 tbill.lms <- summary(dynlm( i ~ L(d(i), 1:4) + 1 + L(i), dataset))
 tbill.adf <- Dickey.Fuller(
   T=length(tbill.lms$residuals),
