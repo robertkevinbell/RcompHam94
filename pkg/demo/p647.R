@@ -1,19 +1,19 @@
 data( ppp, package="RcompHam94" )
-selection <- window( ppp, start=c(1973,1), end=c(1989,10) )
+selection <- window( ppp, start=c(1973,2), end=c(1989,10) )
 ppp.data <- cbind(
-  pstar=100*log(selection[,"PC6IT"]/selection[[1,"PC6IT"]]),
   p=100*log(selection[,"PZUNEW"]/selection[[1,"PZUNEW"]]),
-  ner=-100*log(selection[,"EXRITL"]/selection[[1,"EXRITL"]])
+  ner=-100*log(selection[,"EXRITL"]/selection[[1,"EXRITL"]]),
+  pstar=100*log(selection[,"PC6IT"]/selection[[1,"PC6IT"]])
   )
 y <- as.matrix(ppp.data)
 
 
-delta.y <- diff(y)
 lags <- 12
-X <- embed(delta.y[-dim(delta.y)[[1]],],lags)
-T <- dim(X)[[1]]
 n <- dim(y)[[2]]
-lhs <- cbind( delta.y[-1:(-lags),], y[c(-1:-lags,-(T+lags+1)),] )
+delta.y.lag <- embed(diff(y),lags)
+X <- delta.y.lag[,-(1:n)]
+T <- dim(X)[[1]]
+lhs <- cbind( delta.y.lag[,1:n], y[2:(T+1),] )
 aux.lm <- lm( lhs ~ 1 + X, list( lhs=lhs, X=X ) )
 uv <- sapply(summary(aux.lm),FUN=function(x) { x$residuals })
 u <- uv[,1:n]
@@ -32,6 +32,11 @@ print(SigmaUV)
 print(lambda)
 print(T*log(1-lambda))
 print(LRT)
+
+
+ca.jo.results <- ca.jo(y, type = "eigen", ecdet = "none", K = 12,
+spec="transitory", season = NULL, dumvar = NULL)
+summary(ca.jo.results)
 
 
 ahat1 <- eigen.results$vectors[,1]

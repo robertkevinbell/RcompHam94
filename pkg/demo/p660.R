@@ -94,7 +94,7 @@ GMM.estimates <- function( YT, h, THETA, S)
 
 
 data(fedfunds, package="RcompHam94")
-selection <- window( fedfunds, start=c(1955,1), end=c(2000.99) )
+selection <- window( fedfunds, start=c(1955,1), end=c(2000,12) )
 
 
 plot( index(selection), selection[,"FFED"], type="l",lty=1,xlab="Figure 21.1 - US Fed Funds Rate", ylab="")

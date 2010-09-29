@@ -110,8 +110,9 @@ F <- Wald.F.Test( R=cbind( rep(0,2), diag(2) ),
                       XtX_1=case4.lms$cov.unscaled )
 print(F)
 \end{Scode}
-Similarly we can use ur.df to get similar results, although ur.df gives a slightly different value for the intercept.
-We were unable to explain this discrepancy.
+Similarly we can use ur.df to get similar results,
+although ur.df gives a slightly different value for the intercept
+because of the way the trend dummy is calculated.  
 \begin{Scode}{}
 gnp.4.ur.df <-ur.df(dataset[,"y"],  type ="trend", lags = 0)
 print(summary(gnp.4.ur.df))

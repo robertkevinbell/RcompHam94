@@ -129,7 +129,7 @@ for ( model in list(no.trend.lm,trend.lm) )
   sigma1.hat.sq <- mean(rms$residuals^2)
   lambda.11 <- sigma1.hat.sq^.5 /  (1 - sum(rms$coefficients[ paste("L(u, 1:",lags,")",1:lags,sep=""),  "Estimate"]))
   t.a <- t.rho * cms$sigma / lambda.11
-  print(cfs)
+  print(t(cfs[, c("Estimate","Std. Error"),drop=FALSE]) )
   print( t(rms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
   print( T )
   print(cms$sigma)
