@@ -1,9 +1,9 @@
 data( ppp, package="RcompHam94" )
-selection <- subset( ppp, Month >= "1973-01-01" & Month <= "1989-10-01" )
-ppp.data <- data.frame(
-  pstar=100*log(selection$PC6IT/selection$PC6IT[[1]]),
-  p=100*log(selection$PZUNEW/selection$PZUNEW[[1]]),
-  ner=-100*log(selection$EXRITL/selection$EXRITL[[1]])
+selection <- window( ppp, start=c(1973,1), end=c(1989,10) )
+ppp.data <- cbind(
+  pstar=100*log(selection[,"PC6IT"]/selection[[1,"PC6IT"]]),
+  p=100*log(selection[,"PZUNEW"]/selection[[1,"PZUNEW"]]),
+  ner=-100*log(selection[,"EXRITL"]/selection[[1,"EXRITL"]])
   )
 y <- as.matrix(ppp.data)
 

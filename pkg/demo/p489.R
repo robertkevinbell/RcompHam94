@@ -132,6 +132,13 @@ print( gnp.adf )
 print(F)
 
 
+tbill.ur.df <-ur.df(dataset[,"i"],  type ="drift", lags = 4)
+print(summary(tbill.ur.df))
+
+gnp.ur.df <-ur.df(dataset[,"y"],  type ="trend", lags = 4)
+print(summary(gnp.ur.df))
+
+
 t.value <- (1 - gnp.lms$coefficients[["L(y)","Estimate"]]) / gnp.lms$coefficients[["L(y)","Std. Error"]]
 print( t.value )
 print( (1 - pt( t.value, length(gnp.lms$residuals) )) / 2 )

@@ -111,7 +111,7 @@ The dataset for these examples is the US Fed Funds Rate, monthly between Jan 195
 shown below.
 \begin{Scode}{}
 data(fedfunds, package="RcompHam94")
-selection <- window( fedfunds, start=c(1955,1), end=c(2000.99) )
+selection <- window( fedfunds, start=c(1955,1), end=c(2000,12) )
 \end{Scode}
 \begin{Scode}{fig=TRUE, echo=FALSE}
 plot( index(selection), selection[,"FFED"], type="l",lty=1,xlab="Figure 21.1 - US Fed Funds Rate", ylab="")

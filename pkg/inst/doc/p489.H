@@ -183,6 +183,15 @@ print( t(gnp.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( gnp.adf )
 print(F)
 \end{Scode}
+These calculations can be obtained using ur.df, noting that the coefficient
+on the lagged value of the variable will be 1 less than the method above.
+\begin{Scode}{}
+tbill.ur.df <-ur.df(dataset[,"i"],  type ="drift", lags = 4)
+print(summary(tbill.ur.df))
+
+gnp.ur.df <-ur.df(dataset[,"y"],  type ="trend", lags = 4)
+print(summary(gnp.ur.df))
+\end{Scode}
 \subsection{Example 17.10 - Bayesian Test of Autoregressive Coefficient}
 Page 532 describes a test on the autoregressive coefficient that weights prior probabilities.
 \begin{Scode}{}
