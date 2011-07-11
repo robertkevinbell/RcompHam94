@@ -1,3 +1,4 @@
+#line 5 "p15.Rnw"
 T <- 20
 w <- 1*(1:20 == 3)
 y <- array( dim=c(T,2) )
@@ -8,6 +9,7 @@ for ( j in 3:T )
   y[j,] <- apply(X=phi * y[(j-1):(j-2),],MARGIN=2,FUN=sum) + w[j]
 
 
+#line 17 "p15.Rnw"
 screens <- split.screen( figs=c(2,1) )
 for ( i in 1:2 )
 {

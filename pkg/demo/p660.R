@@ -1,3 +1,4 @@
+#line 7 "p660.Rnw"
 arch.fitted.values <- function( THETA, YT )
 {
   alpha <- THETA[  grep("alpha.*", names(THETA)) ]
@@ -14,6 +15,7 @@ arch.fitted.values <- function( THETA, YT )
 }
 
 
+#line 26 "p660.Rnw"
 arch.standard.errors <- function( THETA, YT )
 {
   x <- YT$x
@@ -50,6 +52,7 @@ arch.standard.errors <- function( THETA, YT )
 }
 
 
+#line 64 "p660.Rnw"
 
 arch.normal <- function(THETA, YT)
 {
@@ -72,6 +75,7 @@ arch.scaled.t <- function(THETA,YT)
 }
 
 
+#line 89 "p660.Rnw"
 GMM.estimates <- function( YT, h, THETA, S)
 {
   g <- function( YT, THETA )
@@ -93,13 +97,16 @@ GMM.estimates <- function( YT, h, THETA, S)
 }
 
 
+#line 113 "p660.Rnw"
 data(fedfunds, package="RcompHam94")
 selection <- window( fedfunds, start=c(1955,1), end=c(2000,12) )
 
 
+#line 117 "p660.Rnw"
 plot( index(selection), selection[,"FFED"], type="l",lty=1,xlab="Figure 21.1 - US Fed Funds Rate", ylab="")
 
 
+#line 122 "p660.Rnw"
 y.lm <- dynlm( y ~ 1 + L(y), data=zooreg(cbind(y=as.vector(selection[,"FFED"]))) )
 u2.lms <- summary( dynlm( u2 ~ 1 + L(u2,1:4), zooreg(data.frame(u2=y.lm$residuals^2)) ) )
 F34 <- Wald.F.Test( R=cbind( rep(0,2) %o% rep(0,3), diag(2) ),
@@ -122,6 +129,7 @@ print(F234.sig)
 print(accept.arch)
 
 
+#line 146 "p660.Rnw"
 y <- as.vector(selection[,"FFED"])
 YT <- list(
   y=y[-1],
@@ -133,6 +141,7 @@ se <- arch.standard.errors( optimizer.results$par, YT )
 print(se)
 
 
+#line 160 "p660.Rnw"
 h <- function( wt, THETA )
 {
   beta <- THETA[  grep("beta.*", names(THETA)) ]

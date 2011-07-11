@@ -1,8 +1,10 @@
+#line 8 "p112.Rnw"
 data(gnp1996,package = "RcompHam94")
 selection <- subset( gnp1996, Quarter >= "1947-01-01" & Quarter <= "1988-10-01")
 y <- diff(log(selection$GNPH))
 
 
+#line 14 "p112.Rnw"
 max.lags <- 20
 T <- length(y)
 threshold <- 2 / sqrt(T)
@@ -14,6 +16,7 @@ for ( j in 1:max.lags )
 rhos <- gammas / gammas[[1]]
 
 
+#line 26 "p112.Rnw"
 subscripts <- outer( seq(1,max.lags) , seq(1,max.lags),
 
               function(i,j) { abs(i-j) } )
@@ -23,6 +26,7 @@ for ( m in 1:max.lags )
   alphas[m] <- solve(GAMMA[1:m,1:m],gammas[2:(m+1)]) [[m]]
 
 
+#line 37 "p112.Rnw"
 screens <- split.screen( figs=c(2,1) )
 screen( n = screens[[1]], new = TRUE )
 par( mar=c(4,2,1,2), cex=.75)
@@ -39,6 +43,7 @@ lines( c(0, max.lags), c( 0, 0 ) )
 close.screen(all=TRUE)
 
 
+#line 57 "p112.Rnw"
 acf.correlation <- acf(y, lag.max = max.lags, type = "correlation", plot = FALSE, demean = TRUE)
 print( as.vector(acf.correlation$acf) )
 print( rhos )

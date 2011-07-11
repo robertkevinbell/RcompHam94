@@ -1,3 +1,4 @@
+#line 6 "p5.Rnw"
 phi <- .8
 T <- 20
 w <- 1*cbind( 1:T == 6, 1:T >= 6 )
@@ -8,6 +9,7 @@ for ( j in 6:T )
   y[j,] <- phi * y[j-1,] + w[j,]
 
 
+#line 18 "p5.Rnw"
 par( mfrow=c(2,2) )
 for ( i in 1:2 )
 {

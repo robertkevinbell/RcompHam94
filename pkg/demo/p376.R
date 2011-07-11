@@ -1,9 +1,12 @@
+## #line 11 "p376.Rnw"
 ## xi.t.t_1 <- array(dim=c(length(xi.1.0),T+1) )
 
 
+## #line 16 "p376.Rnw"
 ## K.t[,,tt] <- P.t.t_1[,,tt] %*% H %*% V
 
 
+#line 22 "p376.Rnw"
 kalman <- function( H, R, F, x, A, y, Q, xi.1.0, P.1.0 )
 {
   T <- dim(x)[[2]]
@@ -43,12 +46,14 @@ kalman <- function( H, R, F, x, A, y, Q, xi.1.0, P.1.0 )
 }
 
 
+#line 63 "p376.Rnw"
 data(coninc,package = "RcompHam94")
 YGR <- diff( log(as.vector(coninc[,"GYD82"])) )
 CGR <- diff( log(as.vector(coninc[,"GC82"])) )
 y <- t(cbind(YGR-mean(YGR),CGR-mean(CGR)))
 
 
+#line 71 "p376.Rnw"
 THETA <- c( "phic"=.9, "phi1"=.9, "phi2"=.9, "g1"=.5, "g2"=.5,
                   "sigc"=.05^.5, "sig11"=.05^.5, "sig22"=.05^.5,
                   "r11"=sd(YGR), "r22"=sd(CGR) )
@@ -70,6 +75,7 @@ theta.y.to.params <- function( THETA, y )
 }
 
 
+#line 93 "p376.Rnw"
 objective <- function( THETA, y )
 {
   params <- theta.y.to.params( THETA, y )
@@ -78,16 +84,19 @@ objective <- function( THETA, y )
 optimizer.results <- optim( par=THETA, fn=objective, gr=NULL, y=y, control=list(trace=0) )
 
 
+#line 102 "p376.Rnw"
 params <- theta.y.to.params( optimizer.results$par, y)
 smoothed.results <- kalman( params$H, params$R, params$F, params$x, params$A, y, params$Q, params$xi.1.0, params$P.1.0 )
 smoothed.data <- smoothed.results$xi.t.T[1,]
 
 
+#line 109 "p376.Rnw"
 plot(index(coninc)[-1],(y[1,])/sd(y[1,]),type="l",lty=1,ylab="CGR, YGR, and C")
 lines(index(coninc)[-1],(y[2,])/sd(y[2,]),lty=2)
 lines(index(coninc)[-1],(smoothed.data-mean(smoothed.data))/sd(smoothed.data),lty=3)
 
 
+#line 123 "p376.Rnw"
 sigmasq <- 2
 params <- list(
     F=array( c(0,1,0,0), c(2,2) ), # [13.3.4]
@@ -106,6 +115,7 @@ params <-  c( params,
 myResults <- kalman(params$H, params$R, params$F, params$x, params$A, params$y, params$Q, params$xi.1.0, params$P.1.0)
 
 
+#line 150 "p376.Rnw"
 fkfResults <- FKF::fkf(
   a0=params$xi.1.0,
   P0=params$P.1.0,
@@ -119,6 +129,7 @@ fkfResults <- FKF::fkf(
   check.input=TRUE)
 
 
+#line 164 "p376.Rnw"
 print(myResults$xi.t.t)
 print(fkfResults$att)
 

@@ -1,3 +1,4 @@
+#line 4 "p647.Rnw"
 data( ppp, package="RcompHam94" )
 selection <- window( ppp, start=c(1973,2), end=c(1989,10) )
 ppp.data <- cbind(
@@ -8,6 +9,7 @@ ppp.data <- cbind(
 y <- as.matrix(ppp.data)
 
 
+#line 16 "p647.Rnw"
 lags <- 12
 n <- dim(y)[[2]]
 delta.y.lag <- embed(diff(y),lags)
@@ -20,6 +22,7 @@ u <- uv[,1:n]
 v <- uv[,(n+1):(2*n)]
 
 
+#line 32 "p647.Rnw"
 SigmaUU <- 1/T * t(u) %*% u
 SigmaVV <- 1/T * t(v) %*% v
 SigmaUV <- 1/T * t(u) %*% v
@@ -34,11 +37,13 @@ print(T*log(1-lambda))
 print(LRT)
 
 
+#line 47 "p647.Rnw"
 ca.jo.results <- ca.jo(y, type = "eigen", ecdet = "none", K = 12,
 spec="transitory", season = NULL, dumvar = NULL)
 summary(ca.jo.results)
 
 
+#line 54 "p647.Rnw"
 ahat1 <- eigen.results$vectors[,1]
 ahat1.tilde <- ahat1 / sqrt( t(ahat1) %*% SigmaVV %*% ahat1 )
 ahat1.normal <- ahat1 / ahat1[[1]]
@@ -47,6 +52,7 @@ print(ahat1.tilde)
 print(ahat1.normal)
 
 
+#line 65 "p647.Rnw"
 D = cbind( c(1, 0, 0), c(0, 0, 1) )
 SigmaVV.tilde <- t(D) %*% SigmaVV %*% D
 SigmaUV.tilde <- SigmaUV %*% D
@@ -63,6 +69,7 @@ print(LRT)
 print(ahat1.normal.tilde)
 
 
+#line 82 "p647.Rnw"
 h <- 1
 D = c(1, -1,-1) %o% 1
 SigmaVV.tilde <- t(D) %*% SigmaVV %*% D

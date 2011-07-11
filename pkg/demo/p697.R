@@ -1,33 +1,39 @@
+#line 4 "p697.Rnw"
 curve (0.8*dnorm(x,0,1), from=-2, to=8, n=100, col=1, ylab="f(x)", main="Density of mixture of 2 gaussians")
 curve (0.2*dnorm(x,4,1), from=-2, to=8, n=100, add=TRUE, col=3)
 mixture<-function(x) 0.8*dnorm(x,0,1)+0.2*dnorm(x,4,1)
 curve (mixture, from=-2, to=8, n=100, col=2, add=TRUE)
 
 
+#line 12 "p697.Rnw"
 mixture2<-function(x) 0.6*dnorm(x,0,1)+0.4*dnorm(x,2,8)
 curve (mixture2, from=-3, to=8, n=100, col=2,ylab="f(x)", main="Density of mixture of 2 gaussians",ylim=c(0,0.25) )
 curve (0.6*dnorm(x,0,1), from=-3, to=8, n=100, col=1, add=TRUE)
 curve (0.4*dnorm(x,2,sqrt(8)), from=-3, to=8, n=100, add=TRUE, col=3)
 
 
+#line 21 "p697.Rnw"
 data(gnpdata, package="RcompHam94")
 selection <- window( gnpdata, start=c(1951,1),end=c(1984,2) )
 g <- diff(100*log(as.vector(selection[,"GNP"])))
 d <- index(selection[-1])
 
 
+#line 31 "p697.Rnw"
 nlags <- 4
 nstates <- 2 ^ (nlags+1)
 lagstate <- 1 + outer( 1:nstates, 1:(nlags+1), FUN=function(i,j) { trunc((i-1) / 2 ^ (nlags + 1-j) ) %% 2 } )
 head(lagstate)
 
 
+#line 37 "p697.Rnw"
 transit <- outer( X=1:nstates, Y=1:nstates, FUN=function(i,j) {
   (( 2 *lagstate[i,1] + lagstate[j,1] - 1) - 1) * (((i-1) %% (2^nlags)) == trunc((j-1)/2)) + 1
   } ) 
 head(transit)
 
 
+#line 46 "p697.Rnw"
 infer.regimes <- function(THETA, YT)
 {
   phi <- THETA[  grep("phi.*", names(THETA)) ]  
@@ -63,12 +69,14 @@ infer.regimes <- function(THETA, YT)
 }
 
 
+#line 83 "p697.Rnw"
 g.lm <- dynlm( g ~ 1 + L(g,1:4), data=zooreg(data.frame(g=g)))
 THETA <- c( p11star=.85, p22star=.70, mu=c(1,0),
   phi=as.vector(g.lm$coefficients[1+(1:nlags)]),
   sigma=summary(g.lm)$sigma )
 
 
+#line 91 "p697.Rnw"
 objective <- function( THETA, YT ) { -infer.regimes( THETA, YT )$log.likelihood }
 optimizer.results <- optim( par=THETA, hessian=TRUE, fn=objective, gr=NULL, YT=as.vector(g),method="BFGS")
 se <- diag(solve(optimizer.results$hessian))^.5
@@ -79,6 +87,7 @@ recession.probability <- as.vector( (1:nstates >nstates/2) %*% regimes$xi.t.t )
 smoothed.recession.probability <- as.vector( (1:nstates >nstates/2) %*% regimes$xi.t.T )
 
 
+#line 103 "p697.Rnw"
 flags.to.start.stop <- function( flags )
 {
   n <- length(flags)

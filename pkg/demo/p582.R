@@ -1,3 +1,4 @@
+#line 6 "p582.Rnw"
 data( ppp, package="RcompHam94" )
 selection <- window( ppp, start=c(1973,1), end=c(1989,10) )
 ppp.data <- cbind(
@@ -8,14 +9,17 @@ ppp.data <- cbind(
 ppp.data <- cbind( ppp.data, rer = ppp.data[,"p"] - ppp.data[,"ner"] - ppp.data[,"pstar"] )
 
 
+#line 17 "p582.Rnw"
 plot(ppp.data[, c("ner", "p", "pstar")], type="l",xlab="Figure 19.2", ylab="",
             ylim=c(-150,250), plot.type="single", lty=c(3,2,1))
 legend("topleft", lty = 1:3, leg = names(ppp.data[1:3]))
 
 
+#line 24 "p582.Rnw"
 plot(index(ppp.data), ppp.data[,"rer"], type="l",lty=1,xlab="Figure 19.3", ylab="")
 
 
+#line 30 "p582.Rnw"
 do.DF <- function( series, lag )
 {
   df.lms <- summary( dynlm(
@@ -38,10 +42,12 @@ do.DF <- function( series, lag )
 }
 
 
+#line 53 "p582.Rnw"
 for ( series.name in c( "p", "pstar", "ner", "rer" ) )
   do.DF( series=as.vector(ppp.data[,series.name]), lag=12 )
 
 
+#line 58 "p582.Rnw"
 pp.lms <- summary(dynlm( z ~ L(z) + 1, zooreg(cbind(z=as.vector(ppp.data[,"rer"]))) ))
 PP.results <- Phillips.Perron(
   T=length(pp.lms$residuals),
@@ -54,6 +60,7 @@ print( t(pp.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE]) )
 print( PP.results)
 
 
+#line 77 "p582.Rnw"
 ar.results <- ar(ppp.data$rer, aic = FALSE, order.max = 13, method="ols", demean=TRUE)
 tt <- seq(1,72)
 start.innov <- rep(0,13)
@@ -63,10 +70,12 @@ arima.sim.output <- arima.sim( list(order=c(13,0,0), ar=ar.results$ar),
 irf <- as.vector(arima.sim.output)
 
 
+#line 86 "p582.Rnw"
 plot( tt[-1:-length(start.innov)],irf[-1:-length(start.innov)], type = "l", xlab="Figure 19.4", ylab="")
 lines( par("usr")[1:2], c(0,0) )
 
 
+#line 92 "p582.Rnw"
 poh.cointegration.lm <- lm( p ~ 1 + ner + pstar, ppp.data )
 poh.residual.lms <- summary( dynlm( u ~ 0 + L(u),
     zooreg(cbind(u=poh.cointegration.lm$residuals))
@@ -82,6 +91,7 @@ print( t(poh.residual.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE])
 print( POH.results)
 
 
+#line 108 "p582.Rnw"
 data(coninc, package="RcompHam94")
 coninc.data <- window(
 	cbind( c = 100*log(coninc[,"GC82"]), y  = 100*log(coninc[,"GYD82"]) ),
@@ -89,15 +99,18 @@ coninc.data <- window(
 coninc.data <- cbind(coninc.data,tt=1:dim(coninc.data)[[1]])
 
 
+#line 115 "p582.Rnw"
 plot( index(coninc.data), coninc.data[,"c"], type="l",lty=1,xlab="Figure 19.5", ylab="")
 lines(index(coninc.data),coninc.data[,"y"],lty=2)
 plot( index(coninc.data),coninc.data[,"c"] - coninc.data[,"y"], type="l",lty=1,xlab="Figure 19.6", ylab="")
 
 
+#line 121 "p582.Rnw"
 for ( series.name in c(  "y", "c") )
   do.DF( series=as.vector(coninc.data[,series.name]), lag=6 )
 
 
+#line 126 "p582.Rnw"
 poh.cointegration.lm <- lm( c ~ 1 + y, coninc.data )
 poh.residual.lms <- summary( dynlm( u ~ 0 + L(u),
     zooreg(cbind(u=poh.cointegration.lm$residuals))
@@ -113,6 +126,7 @@ print( t(poh.residual.lms$coefficients[, c("Estimate","Std. Error"),drop=FALSE])
 print( POH.results)
 
 
+#line 145 "p582.Rnw"
 no.trend.lm <- dynlm( c ~ 1 + y + L(d(y),-4:4), coninc.data )
 trend.lm <- dynlm( c ~ 1 + y + tt + L(d(y),-4:4), coninc.data )
 for ( model in list(no.trend.lm,trend.lm) )

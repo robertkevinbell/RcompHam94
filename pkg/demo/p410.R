@@ -1,6 +1,8 @@
+#line 5 "p410.Rnw"
 Y <- rt(500, 10)
 
 
+#line 9 "p410.Rnw"
 objective <- function(nu, Y) { -sum( log(dt(Y,df=nu)) ) }   # top of p410
 classical.results <- optimize( interval=c(1,30), f=objective, Y=Y)
 mu2 <- mean(Y^2)        # [14.1.3]
@@ -9,6 +11,7 @@ print( classical.results )
 print( nu )
 
 
+#line 20 "p410.Rnw"
 compute.estimates <- function( Y, h, interval )
 {
   g <- function( Y, THETA )
@@ -36,6 +39,7 @@ compute.estimates <- function( Y, h, interval )
 }
 
 
+#line 49 "p410.Rnw"
 h <- function( Yt, THETA)
 {
   nu <- THETA
@@ -45,6 +49,7 @@ estimates <- compute.estimates( Y %o% 1, h, interval=c(5,30) )
 print( estimates )
 
 
+#line 59 "p410.Rnw"
 Yg <- rgamma(500,10) * sign( runif(500, -1, 1) )
 hg <- function( Yt, THETA )
 {

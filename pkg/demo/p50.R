@@ -1,3 +1,4 @@
+#line 6 "p50.Rnw"
 T <- 20
 specifications <- list(
     list( label="White Noise", MA=vector(mode="numeric"), AR=vector(mode="numeric") ),
@@ -9,9 +10,11 @@ specifications <- list(
 sigmasq <- 1
 
 
+#line 18 "p50.Rnw"
 specifications[[1]]$rho <- c( 1, rep(0, T-1))   # [3.2.2], [3.2.3]
 
 
+#line 22 "p50.Rnw"
 for ( i in 2:3 )
 {
   MA <- specifications[[i]]$MA
@@ -27,6 +30,7 @@ for ( i in 2:3 )
 }
 
 
+#line 38 "p50.Rnw"
 for ( i in 4:5)
 {
   AR <- specifications[[i]]$AR
@@ -41,6 +45,7 @@ for ( i in 4:5)
 }
 
 
+#line 53 "p50.Rnw"
 par( mfrow=c(3,2) )
 for ( i in 1:length(specifications) )
 {
@@ -50,6 +55,7 @@ for ( i in 1:length(specifications) )
 }
 
 
+#line 65 "p50.Rnw"
 g3 <- ARMAacf(ar = numeric(0), ma = specifications[[3]]$MA, lag.max = T, pacf = FALSE)
 print(specifications[[3]]$rho)
 print(g3)

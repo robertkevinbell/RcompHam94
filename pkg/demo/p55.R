@@ -1,3 +1,4 @@
+#line 5 "p55.Rnw"
 specifications <- list(
     list( label="f = 0", MA=vector(mode="numeric"), AR=vector(mode="numeric") ),
     list( label="f = .5", MA=vector(mode="numeric"), AR=c(.5) ),
@@ -8,6 +9,7 @@ set.seed(123)
 epsilon <- rnorm(T,0,1)
 
 
+#line 16 "p55.Rnw"
 simulate.forward <- function( specification, epsilon )
 {
   T <- length(epsilon)
@@ -34,6 +36,7 @@ for ( i in 1:length(specifications) )
 
 
 
+#line 43 "p55.Rnw"
 par( mfrow=c(3,1) )
 for ( i in 1:length(specifications) )
 {
@@ -43,6 +46,7 @@ for ( i in 1:length(specifications) )
 }
 
 
+#line 56 "p55.Rnw"
 for ( specification in specifications )
 {
   AR <- specification$AR
