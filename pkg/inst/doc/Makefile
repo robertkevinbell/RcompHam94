@@ -25,7 +25,7 @@ Companion.tex: Companion.Rnw
 	R CMD Sweave $<
 
 RcompHam94:
-	R CMD  build --no-vignettes ../..
+	R CMD INSTALL --no-demo --library=. ../..
 	R CMD  INSTALL  --library=.  RcompHam94_0.1.tar.gz
 
 %.tex : %.H

@@ -1,6 +1,6 @@
 \documentclass[a4paper]{article}
 %\VignetteIndexEntry{RcompHam94: Companion to James Hamilton's "Time Series Analysis"}
-\usepackage[latin9]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage{verbatim}
 \usepackage{amsmath}
 \usepackage{Sweave}
